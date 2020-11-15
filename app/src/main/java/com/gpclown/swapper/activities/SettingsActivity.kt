@@ -2,12 +2,12 @@ package com.gpclown.swapper.activities
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Switch
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gpclown.swapper.Profile
@@ -17,7 +17,7 @@ import com.gpclown.swapper.settings.Setting
 import kotlinx.android.synthetic.main.activity_settings.*
 
 class SettingsActivity : AppCompatActivity() {
-    val profileList : ProfileList = ProfileList.getInstance()
+    private val profileList : ProfileList = ProfileList.getInstance()
     var profile : Profile? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,27 +36,23 @@ class SettingsActivity : AppCompatActivity() {
         settingRecycle.adapter = SettingAdapter(profile, this)
     }
 
-    class SettingViewHolder(inflater: LayoutInflater, parent: ViewGroup, val context: Context) :
+    class SettingViewHolder(inflater: LayoutInflater, parent: ViewGroup, val context: Context, val pid: Int) :
         RecyclerView.ViewHolder(inflater.inflate(R.layout.profilerow, parent, false)) {
         private var name: TextView = itemView.findViewById(R.id.pname)
         private var mSwitch: Switch = itemView.findViewById(R.id.switchp)
 
         fun bind(setting: Setting) {
             name.text = setting.name
-            mSwitch.isChecked = setting.state
+            mSwitch.isChecked = setting.selected
 
             name.setOnClickListener{
-                val intent = Intent(context, SettingActivity::class.java)
+                val intent = Intent(context, setting.getActivity())
+                intent.putExtra("pid", pid)
                 context.startActivity(intent)
             }
 
             mSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
-                if (isChecked) {
-                    setting.state = true
-                }
-                else {
-                    setting.state = false
-                }
+                setting.selected = isChecked
             }
         }
     }
@@ -66,7 +62,7 @@ class SettingsActivity : AppCompatActivity() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SettingViewHolder {
             val inflater = LayoutInflater.from(parent.context)
-            return SettingViewHolder(inflater, parent, context)
+            return SettingViewHolder(inflater, parent, context, profile!!.id)
         }
 
         override fun onBindViewHolder(holder: SettingViewHolder, position: Int) {

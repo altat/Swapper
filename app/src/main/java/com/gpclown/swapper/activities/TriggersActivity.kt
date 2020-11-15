@@ -2,23 +2,22 @@ package com.gpclown.swapper.activities
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Switch
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gpclown.swapper.Profile
 import com.gpclown.swapper.ProfileList
 import com.gpclown.swapper.R
-import com.gpclown.swapper.settings.Setting
 import com.gpclown.swapper.triggers.Trigger
 import kotlinx.android.synthetic.main.activity_triggers.*
 
 class TriggersActivity : AppCompatActivity() {
-    val profileList : ProfileList = ProfileList.getInstance()
+    private val profileList : ProfileList = ProfileList.getInstance()
     var profile : Profile? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,26 +36,32 @@ class TriggersActivity : AppCompatActivity() {
         triggerRecycle.adapter = TriggerAdapter(profile, this)
     }
 
-    class TriggerViewHolder(inflater: LayoutInflater, parent: ViewGroup, val context: Context) :
+    class TriggerViewHolder(inflater: LayoutInflater, parent: ViewGroup, val context: Context, val pid: Int) :
         RecyclerView.ViewHolder(inflater.inflate(R.layout.profilerow, parent, false)) {
         private var name: TextView = itemView.findViewById(R.id.pname)
         private var mSwitch: Switch = itemView.findViewById(R.id.switchp)
+        private val profileList : ProfileList = ProfileList.getInstance()
+        var profile : Profile = profileList.get(pid)
 
         fun bind(trigger: Trigger) {
             name.text = trigger.type
-            mSwitch.isChecked = trigger.state
+            mSwitch.isChecked = trigger.active
 
             name.setOnClickListener{
-                val intent = Intent(context, TriggerActivity::class.java)
+                val intent = Intent(context, trigger.getActivity())
+                intent.putExtra("pid", pid)
                 context.startActivity(intent)
             }
 
             mSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (isChecked) {
-                    trigger.state = true
+                    trigger.activate(context, pid)
+                    profile.activeTriggers++
                 }
                 else {
-                    trigger.state = false
+                    trigger.deactivate()
+                    trigger.active = false
+                    profile.activeTriggers--
                 }
             }
         }
@@ -67,7 +72,7 @@ class TriggersActivity : AppCompatActivity() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TriggerViewHolder {
             val inflater = LayoutInflater.from(parent.context)
-            return TriggerViewHolder(inflater, parent, context)
+            return TriggerViewHolder(inflater, parent, context, profile!!.id)
         }
 
         override fun onBindViewHolder(holder: TriggerViewHolder, position: Int) {

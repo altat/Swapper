@@ -1,8 +1,8 @@
 package com.gpclown.swapper.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.gpclown.swapper.Profile
 import com.gpclown.swapper.ProfileList
 import com.gpclown.swapper.R
@@ -29,7 +29,7 @@ class ProfileActivity : AppCompatActivity() {
 
         cancelProfileButton.setOnClickListener{
             if (!editMode) {
-                profileList.remove(profile.number)
+                profileList.remove(profile.id)
             }
             val intent = Intent(this, ProfileListActivity::class.java)
             startActivity(intent)
@@ -45,21 +45,21 @@ class ProfileActivity : AppCompatActivity() {
         settingsButton.setOnClickListener {
             addProfile()
             val intent = Intent(this, SettingsActivity::class.java)
-            intent.putExtra("profile", profile.number)
+            intent.putExtra("profile", profile.id)
             startActivity(intent)
         }
 
         triggersButton.setOnClickListener {
             addProfile()
             val intent = Intent(this, TriggersActivity::class.java)
-            intent.putExtra("profile", profile.number)
+            intent.putExtra("profile", profile.id)
             startActivity(intent)
         }
     }
 
     private fun addProfile() {
         if (!profileList.contains(profile)) {
-            profile.number = profileList.profiles.size
+            profile.id = profileList.profiles.size
             profileList.add(profile)
         }
     }

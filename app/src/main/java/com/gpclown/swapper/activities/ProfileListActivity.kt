@@ -3,18 +3,16 @@ package com.gpclown.swapper.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Switch
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gpclown.swapper.Profile
 import com.gpclown.swapper.ProfileList
 import com.gpclown.swapper.R
-
 import kotlinx.android.synthetic.main.activity_profile_list.*
 
 class ProfileListActivity : AppCompatActivity() {
@@ -52,7 +50,7 @@ class ProfileListActivity : AppCompatActivity() {
 
             mSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (isChecked) {
-                    profile.activate()
+                    profile.activate(context)
                 }
                 else {
                     profile.deactivate()
